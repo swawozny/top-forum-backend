@@ -9,3 +9,7 @@
 node_modules/
 jspm_packages/
 npm-debug.log
+/.idea/vcs.xml
+/.idea/top-forum-backend.iml
+/.idea/modules.xml
+/.idea/.gitignore
