@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  forum_backend:
+    container_name: forum_backend
+    build: .
+    restart: always
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      - DATABASE=${DB_NAME}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+    depends_on:
+      - forum_db
+
+  forum_db:
+    container_name: forum_db
+    restart: always
+    image: postgres:latest
+    ports:
+      - '${DB_PORT}:${DB_PORT}'
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - forum_db_data:/var/lib/postgresql/data
+
+volumes:
+  forum_db_data: { }

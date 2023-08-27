@@ -8,3 +8,4 @@
 # Dependency directories
 node_modules/
 jspm_packages/
+npm-debug.log
