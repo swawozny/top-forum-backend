@@ -1,10 +1,11 @@
 const express = require('express');
-const sequelize = require('./utils/database');
+require('dotenv').config();
 
+const db = require('./models/index');
 const PORT = process.env.PORT || 8080;
 
 const app = express();
-sequelize
+db.sequelize
     .sync()
     .then(() => {
         app.listen(PORT);
