@@ -7,6 +7,7 @@ const {User} = require('../models/index');
 const {sendEmail} = require('../services/nodemailer');
 const ApiError = require('../errors/apiError');
 const {createEmailHtml} = require('../utils/emailTemplate');
+const {createToken} = require("../services/jwt");
 
 const SALT_LENGTH = 12;
 const RANDOM_BYTES_LENGTH = 10;
@@ -59,4 +60,46 @@ exports.signUp = async (req, res, next) => {
         }
         next(err);
     }
+};
+
+exports.login = async (req, res, next) => {
+    try {
+        const validationErrors = validationResult(req);
+
+        if (!validationErrors.isEmpty()) {
+            throw new ApiError(StatusCodes.BAD_REQUEST, 'Request data validation error!', validationErrors.array());
+        }
+
+        const {email, password} = req.body;
+
+        const user = await User.findOne({where: {email}});
+
+        if (!user) {
+            throw new ApiError(StatusCodes.NOT_FOUND, 'User with provided email does not exist!');
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordCorrect) {
+            throw new ApiError(StatusCodes.UNAUTHORIZED, 'User password is not correct!');
+        }
+
+        if (!user.isActive) {
+            throw new ApiError(StatusCodes.UNAUTHORIZED, 'You must confirm your email!');
+        }
+
+        const token = createToken({email, userId: user.id.toString()});
+        return res.status(StatusCodes.OK).json({
+            message: 'User successfully logged in.',
+            token,
+            userId: user.id.toString()
+        });
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+        }
+        next(error);
+    }
+
 };
