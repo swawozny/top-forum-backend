@@ -3,7 +3,11 @@ const {Model} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class User extends Model {
         static associate(models) {
-            this.belongsTo(models.Role);
+            this.belongsTo(models.Role, {
+                foreignKey: {
+                    defaultValue: 1
+                }
+            });
         }
     }
 
@@ -20,7 +24,18 @@ module.exports = (sequelize, DataTypes) => {
         password: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        isActive: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
+        activationCode: {
+            type: DataTypes.STRING,
+            unique: true,
+            allowNull: false
         }
+
+
     }, {
         sequelize,
         modelName: 'User',
