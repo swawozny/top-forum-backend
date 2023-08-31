@@ -10,4 +10,6 @@ router.post('/signup', signUpDataValidate, authController.signUp);
 
 router.post('/login', authDataValidate, authController.login);
 
+router.post('/confirm-email', authController.confirmEmail);
+
 module.exports = router;
