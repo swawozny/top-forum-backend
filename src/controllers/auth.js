@@ -30,11 +30,13 @@ exports.signUp = async (req, res, next) => {
 
         const activationCode = crypto.randomBytes(RANDOM_BYTES_LENGTH).toString('hex');
 
+        const hashedActivationCode = await bcrypt.hash(activationCode, SALT_LENGTH);
+
         const user = await User.create({
                 username,
                 email,
                 password: hashedPassword,
-                activationCode
+            activationCode: hashedActivationCode
             }
         );
 
@@ -101,5 +103,38 @@ exports.login = async (req, res, next) => {
         }
         next(error);
     }
+};
 
+exports.confirmEmail = async (req, res, next) => {
+    try {
+        const {email, activationCode} = req.body;
+
+        const user = await User.findOne({where: {email}});
+
+        if (!user) {
+            throw new ApiError(StatusCodes.NOT_FOUND, 'User with provided email does not exist!');
+        }
+
+        if (user.isActive) {
+            throw new ApiError(StatusCodes.UNAUTHORIZED, 'User email has already been confirmed!');
+        }
+
+        const isCodeCorrect = await bcrypt.compare(activationCode, user.activationCode);
+
+        if (!isCodeCorrect) {
+            throw new ApiError(StatusCodes.UNAUTHORIZED, 'Activation code is not correct!');
+        }
+
+        user.isActive = true;
+
+        await user.save();
+
+        return res.status(StatusCodes.OK).json({message: 'User email confirmed.'})
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+        }
+        next(error);
+    }
 };
