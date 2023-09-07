@@ -3,16 +3,16 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const {StatusCodes} = require('http-status-codes');
 
-const {User} = require('../models/index');
+const {User} = require('../database/models');
+
 const {sendEmail} = require('../services/nodemailer');
 const ApiError = require('../errors/apiError');
 const {createEmailHtml} = require('../utils/emailTemplate');
 const {createToken} = require("../services/jwt");
-const {createLink, createHtmlLink} = require("../utils/linkTemplate");
+const {createHtmlLink} = require("../utils/linkTemplate");
 
 const SALT_LENGTH = 12;
 const RANDOM_BYTES_LENGTH = 10;
-const {APP_HOST} = process.env;
 
 exports.signUp = async (req, res, next) => {
     try {
