@@ -7,8 +7,6 @@ const cors = require('cors');
 dotenv.config();
 const PORT = process.env.PORT || 8080;
 
-const db = require('./models/index');
-
 const {authRoutes} = require('./routes');
 const {errorHandler} = require('./middlewares/errorHandler');
 
@@ -37,11 +35,6 @@ app.use(
 app.use('/auth', authRoutes);
 app.use(errorHandler);
 
-db.sequelize
-    .sync()
-    .then(() => {
-        app.listen(PORT);
-    })
-    .catch(error => {
-        throw new Error(error);
-    });
+app.listen(PORT);
+
+module.exports = app;
