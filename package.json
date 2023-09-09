@@ -7,7 +7,7 @@
     "start": "nodemon src/server.js",
     "migrate": "npx sequelize-cli db:migrate",
     "migrate:reset": "npx sequelize-cli db:migrate:undo:all && npm run migrate && npx sequelize-cli db:seed:all",
-    "test": "cross-env NODE_ENV=test jest --testTimeout=10000",
+    "test": "cross-env NODE_ENV=test jest --forceExit --testTimeout=10000",
     "pretest": "cross-env NODE_ENV=test npm run migrate:reset",
     "db:create:test": "cross-env NODE_ENV=test npx sequelize-cli db:create"
   },
@@ -19,6 +19,7 @@
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
+    "expect": "^29.6.4",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
     "helmet": "^7.0.0",
