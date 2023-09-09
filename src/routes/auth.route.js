@@ -1,6 +1,6 @@
 const express = require('express');
 
-const authController = require('../controllers/auth');
+const authController = require('../controllers/auth.controller');
 const {validateSignUpData, validateEmail, validatePassword} = require("../validations/signUpData");
 const {validateLoginData} = require("../validations/loginData");
 const {validateConfirmEmailData} = require("../validations/confirmData");
