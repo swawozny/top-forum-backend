@@ -94,9 +94,11 @@ describe("Auth endpoints tests", () => {
 
             await user.save();
 
-            const result = await request(app).post("/auth/confirm-email").send({
-                email: EXAMPLE_USER.email,
-                activationCode: EXAMPLE_USER.activationCode
+            const result = await request(app)
+                .post("/auth/confirm-email")
+                .send({
+                    email: EXAMPLE_USER.email,
+                    activationCode: EXAMPLE_USER.activationCode
             });
 
 
@@ -114,9 +116,11 @@ describe("Auth endpoints tests", () => {
 
             await user.save();
 
-            const result = await request(app).post("/auth/confirm-email").send({
-                email: EXAMPLE_USER.email,
-                activationCode: EXAMPLE_USER.activationCode
+            const result = await request(app)
+                .post("/auth/confirm-email")
+                .send({
+                    email: EXAMPLE_USER.email,
+                    activationCode: EXAMPLE_USER.activationCode
             });
 
 
@@ -135,15 +139,41 @@ describe("Auth endpoints tests", () => {
 
             await user.save();
 
-            const result = await request(app).post("/auth/confirm-email").send({
-                email: EXAMPLE_USER.email,
-                activationCode: "incorrectActivationCode"
+            const result = await request(app)
+                .post("/auth/confirm-email")
+                .send({
+                    email: EXAMPLE_USER.email,
+                    activationCode: "incorrectActivationCode"
             });
 
             expect(result.statusCode).toEqual(StatusCodes.UNAUTHORIZED);
             expect(result.body.message).toEqual("Activation code is not correct!");
         });
 
+    });
+
+    describe("POST /auth/try-reset-password", () => {
+        it("should send email with restoring link", async () => {
+            const hashedActivationCode = await bcrypt.hash(EXAMPLE_USER.activationCode, SALT_LENGTH);
+
+            const user = await User.create({
+                ...EXAMPLE_USER,
+                isActive: false,
+                activationCode: hashedActivationCode
+            });
+
+            await user.save();
+
+            const result = await request(app)
+                .post("/auth/try-reset-password")
+                .send({
+                    email: EXAMPLE_USER.email,
+                });
+
+
+            expect(result.statusCode).toEqual(StatusCodes.OK);
+            expect(result.body.message).toEqual("A password reset link was sent to email.");
+        });
     });
 
     afterEach(async () => {
