@@ -82,6 +82,70 @@ describe("Auth endpoints tests", () => {
         });
     });
 
+    describe("POST /auth/confirm-email", () => {
+        it("should confirm user email", async () => {
+            const hashedActivationCode = await bcrypt.hash(EXAMPLE_USER.activationCode, SALT_LENGTH);
+
+            const user = await User.create({
+                ...EXAMPLE_USER,
+                isActive: false,
+                activationCode: hashedActivationCode
+            });
+
+            await user.save();
+
+            const result = await request(app).post("/auth/confirm-email").send({
+                email: EXAMPLE_USER.email,
+                activationCode: EXAMPLE_USER.activationCode
+            });
+
+
+            expect(result.statusCode).toEqual(StatusCodes.OK);
+            expect(result.body.message).toEqual("User email confirmed.");
+        });
+
+        it("should return message that email has been already confirmed", async () => {
+            const hashedActivationCode = await bcrypt.hash(EXAMPLE_USER.activationCode, SALT_LENGTH);
+
+            const user = await User.create({
+                ...EXAMPLE_USER,
+                activationCode: hashedActivationCode
+            });
+
+            await user.save();
+
+            const result = await request(app).post("/auth/confirm-email").send({
+                email: EXAMPLE_USER.email,
+                activationCode: EXAMPLE_USER.activationCode
+            });
+
+
+            expect(result.statusCode).toEqual(StatusCodes.UNAUTHORIZED);
+            expect(result.body.message).toEqual("User email has already been confirmed!");
+        });
+
+        it("should return message that activationCode is not correct", async () => {
+            const hashedActivationCode = await bcrypt.hash(EXAMPLE_USER.activationCode, SALT_LENGTH);
+
+            const user = await User.create({
+                ...EXAMPLE_USER,
+                isActive: false,
+                activationCode: hashedActivationCode
+            });
+
+            await user.save();
+
+            const result = await request(app).post("/auth/confirm-email").send({
+                email: EXAMPLE_USER.email,
+                activationCode: "incorrectActivationCode"
+            });
+
+            expect(result.statusCode).toEqual(StatusCodes.UNAUTHORIZED);
+            expect(result.body.message).toEqual("Activation code is not correct!");
+        });
+
+    });
+
     afterEach(async () => {
         await User.truncate();
     });
