@@ -176,6 +176,54 @@ describe("Auth endpoints tests", () => {
         });
     });
 
+    describe("POST /auth/reset-password", () => {
+        it("should return message that password has been successfully reseted", async () => {
+            const hashedRestoringCode = await bcrypt.hash(EXAMPLE_USER.restoringCode, SALT_LENGTH);
+            const hashedActivationCode = await bcrypt.hash(EXAMPLE_USER.activationCode, SALT_LENGTH);
+
+            const user = await User.create({
+                ...EXAMPLE_USER,
+                activationCode: hashedActivationCode,
+                restoringCode: hashedRestoringCode
+            });
+
+            await user.save();
+
+            const newPassword = "newTestPassword";
+
+            const result = await request(app)
+                .post(`/auth/reset-password?uid=${user.id.toString()}&restoringCode=${EXAMPLE_USER.restoringCode}`)
+                .send({
+                    password: newPassword
+                });
+
+            expect(result.statusCode).toEqual(StatusCodes.OK);
+            expect(result.body.message).toEqual("Password has been successfully reseted.");
+        });
+
+        it("should return message that restoringCode is not correct", async () => {
+
+            const hashedActivationCode = await bcrypt.hash(EXAMPLE_USER.activationCode, SALT_LENGTH);
+
+            const user = await User.create({
+                ...EXAMPLE_USER,
+                activationCode: hashedActivationCode
+            });
+
+            await user.save();
+            const newPassword = "newTestPassword";
+
+            const result = await request(app)
+                .post(`/auth/reset-password?uid=${user.id.toString()}&restoringCode=${EXAMPLE_USER.restoringCode}`)
+                .send({
+                    password: newPassword
+                });
+
+            expect(result.statusCode).toEqual(StatusCodes.UNAUTHORIZED);
+            expect(result.body.message).toEqual("Restoring code is not correct!");
+        });
+    });
+
     afterEach(async () => {
         await User.truncate();
     });
