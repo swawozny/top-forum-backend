@@ -1,4 +1,3 @@
-const {validationResult} = require('express-validator');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const {StatusCodes} = require('http-status-codes');
@@ -16,12 +15,6 @@ const RANDOM_BYTES_LENGTH = 10;
 
 exports.signUp = async (req, res, next) => {
     try {
-        const validationErrors = validationResult(req);
-
-        if (!validationErrors.isEmpty()) {
-            throw new ApiError(StatusCodes.BAD_REQUEST, 'Request data validation error!', validationErrors.array());
-        }
-
         const {username, email, password} = req.body;
 
         const hashedPassword = await bcrypt.hash(password, SALT_LENGTH);
@@ -68,12 +61,6 @@ exports.signUp = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
     try {
-        const validationErrors = validationResult(req);
-
-        if (!validationErrors.isEmpty()) {
-            throw new ApiError(StatusCodes.BAD_REQUEST, 'Request data validation error!', validationErrors.array());
-        }
-
         const {email, password} = req.body;
 
         const user = await User.findOne({where: {email}});
@@ -109,12 +96,6 @@ exports.login = async (req, res, next) => {
 
 exports.confirmEmail = async (req, res, next) => {
     try {
-        const validationErrors = validationResult(req);
-
-        if (!validationErrors.isEmpty()) {
-            throw new ApiError(StatusCodes.BAD_REQUEST, 'Request data validation error!', validationErrors.array());
-        }
-
         const {email, activationCode} = req.body;
 
         const user = await User.findOne({where: {email}});
@@ -149,12 +130,6 @@ exports.confirmEmail = async (req, res, next) => {
 
 exports.tryResetPassword = async (req, res, next) => {
     try {
-        const validationErrors = validationResult(req);
-
-        if (!validationErrors.isEmpty()) {
-            throw new ApiError(StatusCodes.BAD_REQUEST, 'Request data validation error!', validationErrors.array());
-        }
-
         const {email} = req.body;
 
         const user = await User.findOne({where: {email}});
@@ -201,12 +176,6 @@ exports.tryResetPassword = async (req, res, next) => {
 
 exports.resetPassword = async (req, res, next) => {
     try {
-        const validationErrors = validationResult(req);
-
-        if (!validationErrors.isEmpty()) {
-            throw new ApiError(StatusCodes.BAD_REQUEST, 'Request data validation error!', validationErrors.array());
-        }
-
         const {uid, restoringCode} = req.query;
         const {password} = req.body;
 
