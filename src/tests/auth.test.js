@@ -4,6 +4,7 @@ const {StatusCodes} = require("http-status-codes");
 
 const app = require("../server");
 const {User} = require("../database/models");
+const bcrypt = require("bcrypt");
 
 const EXAMPLE_USER = {
     username: "test",
@@ -14,13 +15,16 @@ const EXAMPLE_USER = {
     isActive: true
 };
 
+const SALT_LENGTH = 12;
 describe("Auth endpoints tests", () => {
     describe("POST /auth/signup", () => {
         it("should create new user", async () => {
-            const result = await request(app).post("/auth/signup").send({
-                email: EXAMPLE_USER.email,
-                password: EXAMPLE_USER.password,
-                username: EXAMPLE_USER.username
+            const result = await request(app)
+                .post("/auth/signup")
+                .send({
+                    email: EXAMPLE_USER.email,
+                    password: EXAMPLE_USER.password,
+                    username: EXAMPLE_USER.username
             });
 
             expect(result.statusCode).toEqual(StatusCodes.CREATED);
@@ -28,13 +32,53 @@ describe("Auth endpoints tests", () => {
         });
 
         it("should throw validation error", async () => {
-            const result = await request(app).post("/auth/signup").send({
-                email: "test",
-                password: EXAMPLE_USER.password,
-                username: EXAMPLE_USER.username
-            });
+            const result = await request(app)
+                .post("/auth/signup")
+                .send({
+                    email: "test",
+                    password: EXAMPLE_USER.password,
+                    username: EXAMPLE_USER.username
+                });
+
             expect(result.statusCode).toEqual(StatusCodes.BAD_REQUEST);
             expect(result.body.message).toEqual("Request data validation error!");
+        });
+    });
+
+    describe("POST /auth/login", () => {
+        it("should return auth token", async () => {
+            const hashedPassword = await bcrypt.hash(EXAMPLE_USER.password, SALT_LENGTH);
+
+            const user = await User
+                .create({...EXAMPLE_USER, password: hashedPassword});
+
+            await user.save();
+
+            const loginResult = await request(app)
+                .post("/auth/login")
+                .send({
+                    email: EXAMPLE_USER.email,
+                    password: EXAMPLE_USER.password
+                });
+
+            expect(loginResult.statusCode).toEqual(StatusCodes.OK);
+            expect(loginResult.body).toHaveProperty("token");
+        });
+
+        it("should throw password incorrect error ", async () => {
+            const user = await User.create(EXAMPLE_USER);
+
+            await user.save();
+
+            const loginResult = await request(app)
+                .post("/auth/login")
+                .send({
+                    email: EXAMPLE_USER.email,
+                    password: EXAMPLE_USER.password
+                });
+
+            expect(loginResult.statusCode).toEqual(StatusCodes.UNAUTHORIZED);
+            expect(loginResult.body.message).toEqual("User password is not correct!");
         });
     });
 
