@@ -80,10 +80,11 @@ exports.login = async (req, res, next) => {
         }
 
         const token = createToken({email, userId: user.id.toString()});
+        const {username} = user;
         return res.status(StatusCodes.OK).json({
             message: 'User successfully logged in.',
             token,
-            userId: user.id.toString()
+            username
         });
 
     } catch (error) {
