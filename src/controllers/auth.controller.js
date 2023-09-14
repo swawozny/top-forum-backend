@@ -76,7 +76,7 @@ exports.login = async (req, res, next) => {
         }
 
         if (!user.isActive) {
-            throw new ApiError(StatusCodes.UNAUTHORIZED, 'You must confirm your email!');
+            throw new ApiError(StatusCodes.FORBIDDEN, 'You must confirm your email!');
         }
 
         const token = createToken({email, userId: user.id.toString()});
