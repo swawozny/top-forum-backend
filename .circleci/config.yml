@@ -5,9 +5,8 @@ jobs:
   build:
     docker:
       - image: cimg/node:20.6.1
-        context:
-          - top-forum-backend
         environment:
+          context: top-forum-backend
           APP_HOST: top-forum.online
           TEST_DB: top_forum_test_db
           DB_USERNAME: postgres
@@ -22,8 +21,6 @@ jobs:
           JWT_PRIVATE_KEY: top-forum-secret-key
           JWT_EXPIRATION: 1h
       - image: cimg/postgres:15.3
-        context:
-          - top-forum-backend
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: 1234
