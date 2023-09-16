@@ -5,24 +5,24 @@ jobs:
       - image: cimg/node:20.6.1
         environment:
           context: top-forum-backend
-          APP_HOST: top-forum.online
-          TEST_DB: top_forum_test_db
-          DB_USERNAME: postgres
-          DB_PASSWORD: 1234
-          DB_PORT: 5432
-          DB_HOST: localhost
-          MAIL_HOST: sandbox.smtp.mailtrap.io
-          MAIL_PORT: 2525
-          MAIL_USER: 6eaa403b95b9cd
-          MAIL_PASSWORD: 90218ef2a13e17
-          MAIL_DEFAULT: admin@top-forum.pl
+          APP_HOST: APP_HOST
+          TEST_DB: TEST_DB
+          DB_USERNAME: DB_USERNAME
+          DB_PASSWORD: DB_PASSWORD
+          DB_PORT: DB_PORT
+          DB_HOST: DB_HOST
+          MAIL_HOST: MAIL_HOST
+          MAIL_PORT: MAIL_PORT
+          MAIL_USER: MAIL_USER
+          MAIL_PASSWORD: MAIL_PASSWORD
+          MAIL_DEFAULT: MAIL_DEFAULT
           JWT_PRIVATE_KEY: JWT_PRIVATE_KEY
-          JWT_EXPIRATION: 1h
+          JWT_EXPIRATION: JWT_EXPIRATION
       - image: cimg/postgres:15.3
         environment:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 1234
-          POSTGRES_DB: top_forum_test_db
+          POSTGRES_USER: DB_USERNAME
+          POSTGRES_PASSWORD: DB_PASSWORD
+          POSTGRES_DB: TEST_DB
 
     working_directory: ~/repo
 
