@@ -31,8 +31,8 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run: npm install sequelize-cli@6.6.1 --save-dev
-
-      - run: npm run pretest
+      - run:
+          name: Wait for Postgres to start
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
 
       - run: npm test
