@@ -3,6 +3,8 @@ jobs:
   build:
     docker:
       - image: cimg/node:20.6.1
+        context:
+          - top-forum-backend
         environment:
           DB_USERNAME: ${DB_USERNAME}
           DB_PASSWORD: ${DB_PASSWORD}
@@ -17,6 +19,8 @@ jobs:
           JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
           JWT_EXPIRATION: ${JWT_EXPIRATION}
       - image: cimg/postgres:15.3
+        context:
+          - top-forum-backend
         environment:
           POSTGRES_USER: ${DB_USERNAME}
           POSTGRES_PASSWORD: ${DB_PASSWORD}
