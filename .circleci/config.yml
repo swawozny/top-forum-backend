@@ -3,11 +3,15 @@ jobs:
   build:
     docker:
       - image: node:18
+        environment:
+          DB_USERNAME: postgres
+          DB_PASSWORD: 1234
+          TEST_DB: top_forum_test_db
       - image: circleci/postgres:latest
         environment:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: top_forum
+          POSTGRES_PASSWORD: 1234
+          POSTGRES_DB: top_forum_test_db
 
     working_directory: ~/repo
 
@@ -26,5 +30,4 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      # run tests!
       - run: npm test
