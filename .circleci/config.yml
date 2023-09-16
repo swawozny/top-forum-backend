@@ -16,7 +16,7 @@ jobs:
           MAIL_USER: 6eaa403b95b9cd
           MAIL_PASSWORD: 90218ef2a13e17
           MAIL_DEFAULT: admin@top-forum.pl
-          JWT_PRIVATE_KEY: top-forum-secret-key
+          JWT_PRIVATE_KEY: JWT_PRIVATE_KEY
           JWT_EXPIRATION: 1h
       - image: cimg/postgres:15.3
         environment:
