@@ -27,6 +27,7 @@ describe("Auth endpoints tests", () => {
                     username: EXAMPLE_USER.username
             });
 
+            console.log(result.body.message)
             expect(result.statusCode).toEqual(StatusCodes.CREATED);
             expect(result.body.message).toEqual("User created.");
         });
@@ -61,6 +62,7 @@ describe("Auth endpoints tests", () => {
                     password: EXAMPLE_USER.password
                 });
 
+            console.log(loginResult.body.message)
             expect(loginResult.statusCode).toEqual(StatusCodes.OK);
             expect(loginResult.body).toHaveProperty("token");
         });
@@ -170,7 +172,7 @@ describe("Auth endpoints tests", () => {
                     email: EXAMPLE_USER.email,
                 });
 
-
+            console.log(result.body.message)
             expect(result.statusCode).toEqual(StatusCodes.OK);
             expect(result.body.message).toEqual("A password reset link was sent to email.");
         });
