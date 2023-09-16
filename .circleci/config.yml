@@ -4,23 +4,23 @@ jobs:
     docker:
       - image: cimg/node:20.6.1
         environment:
-          DB_USERNAME: $DB_USERNAME
-          DB_PASSWORD: $DB_PASSWORD
-          TEST_DB: $TEST_DB
-          DB_HOST: $DB_HOST
-          APP_HOST: $APP_HOST
-          MAIL_HOST: $MAIL_HOST
-          MAIL_PORT: $MAIL_PORT
-          MAIL_USER: $MAIL_USER
-          MAIL_PASSWORD: $MAIL_PASSWORD
-          MAIL_DEFAULT: $MAIL_DEFAULT
-          JWT_PRIVATE_KEY: $JWT_PRIVATE_KEY
-          JWT_EXPIRATION: $JWT_EXPIRATION
+          DB_USERNAME: ${DB_USERNAME}
+          DB_PASSWORD: ${DB_PASSWORD}
+          TEST_DB: ${TEST_DB}
+          DB_HOST: ${DB_HOST}
+          APP_HOST: ${APP_HOST}
+          MAIL_HOST: ${MAIL_HOST}
+          MAIL_PORT: ${MAIL_PORT}
+          MAIL_USER: ${MAIL_USER}
+          MAIL_PASSWORD: ${MAIL_PASSWORD}
+          MAIL_DEFAULT: ${MAIL_DEFAULT}
+          JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+          JWT_EXPIRATION: ${JWT_EXPIRATION}
       - image: cimg/postgres:15.3
         environment:
-          POSTGRES_USER: $DB_USERNAME
-          POSTGRES_PASSWORD: $DB_PASSWORD
-          POSTGRES_DB: $TEST_DB
+          POSTGRES_USER: ${DB_USERNAME}
+          POSTGRES_PASSWORD: ${DB_PASSWORD}
+          POSTGRES_DB: ${TEST_DB}
 
     working_directory: ~/repo
 
