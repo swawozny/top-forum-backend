@@ -4,23 +4,23 @@ jobs:
     docker:
       - image: cimg/node:20.6.1
         environment:
-          DB_USERNAME: postgres
-          DB_PASSWORD: 1234
-          TEST_DB: top_forum_test_db
-          DB_HOST: localhost
-          APP_HOST: top-forum.online
-          MAIL_HOST: sandbox.smtp.mailtrap.io
-          MAIL_PORT: 2525
-          MAIL_USER: 6eaa403b95b9cd
-          MAIL_PASSWORD: 90218ef2a13e17
-          MAIL_DEFAULT: admin@top-forum.pl
-          JWT_PRIVATE_KEY: top-forum-secret-key
-          JWT_EXPIRATION: 1h
+          DB_USERNAME: $DB_USERNAME
+          DB_PASSWORD: $DB_PASSWORD
+          TEST_DB: $TEST_DB
+          DB_HOST: $DB_HOST
+          APP_HOST: $APP_HOST
+          MAIL_HOST: $MAIL_HOST
+          MAIL_PORT: $MAIL_PORT
+          MAIL_USER: $MAIL_USER
+          MAIL_PASSWORD: $MAIL_PASSWORD
+          MAIL_DEFAULT: $MAIL_DEFAULT
+          JWT_PRIVATE_KEY: $JWT_PRIVATE_KEY
+          JWT_EXPIRATION: $JWT_EXPIRATION
       - image: cimg/postgres:15.3
         environment:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 1234
-          POSTGRES_DB: top_forum_test_db
+          POSTGRES_USER: $DB_USERNAME
+          POSTGRES_PASSWORD: $DB_PASSWORD
+          POSTGRES_DB: $TEST_DB
 
     working_directory: ~/repo
 
