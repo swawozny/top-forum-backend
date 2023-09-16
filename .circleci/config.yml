@@ -1,5 +1,7 @@
 version: 2.1
 jobs:
+  prebuild:
+    context: top-forum-backend
   build:
     docker:
       - image: cimg/node:20.6.1
