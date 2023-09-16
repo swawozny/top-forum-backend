@@ -16,7 +16,7 @@ jobs:
           MAIL_DEFAULT: admin@top-forum.pl
           JWT_PRIVATE_KEY: top-forum-secret-key
           JWT_EXPIRATION: 1h
-      - image: circleci/postgres:latest
+      - image: cimg/postgres:latest
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: 1234
