@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/node:18
+      - image: cimg/node:latest
         environment:
           DB_USERNAME: postgres
           DB_PASSWORD: 1234
