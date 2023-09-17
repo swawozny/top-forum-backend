@@ -1,5 +1,4 @@
 version: 2.1
-
 jobs:
   build:
     docker:
@@ -43,8 +42,8 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
       - run:
-        name: Wait for Postgres to start
-        command: dockerize -wait tcp://localhost:5432 -timeout 1m
+          name: Wait for Postgres to start
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
 
       - run: npm install sequelize-cli
 
