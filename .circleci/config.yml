@@ -4,26 +4,24 @@ jobs:
     docker:
       - image: cimg/node:20.6.1
         environment:
-          context: top-forum-backend
-          APP_HOST: APP_HOST
-          TEST_DB: TEST_DB
-          DB_USERNAME: DB_USERNAME
-          DB_PASSWORD: DB_PASSWORD
-          DB_PORT: DB_PORT
-          DB_HOST: DB_HOST
-          MAIL_HOST: MAIL_HOST
-          MAIL_PORT: MAIL_PORT
-          MAIL_USER: MAIL_USER
-          MAIL_PASSWORD: MAIL_PASSWORD
-          MAIL_DEFAULT: MAIL_DEFAULT
-          JWT_PRIVATE_KEY: JWT_PRIVATE_KEY
-          JWT_EXPIRATION: JWT_EXPIRATION
+          APP_HOST: $APP_HOST
+          TEST_DB: $TEST_DB
+          DB_USERNAME: $DB_USERNAME
+          DB_PASSWORD: $DB_PASSWORD
+          DB_PORT: $DB_PORT
+          DB_HOST: $DB_HOST
+          MAIL_HOST: $MAIL_HOST
+          MAIL_PORT: $MAIL_PORT
+          MAIL_USER: $MAIL_USER
+          MAIL_PASSWORD: $MAIL_PASSWORD
+          MAIL_DEFAULT: $MAIL_DEFAULT
+          JWT_PRIVATE_KEY: $JWT_PRIVATE_KEY
+          JWT_EXPIRATION: $JWT_EXPIRATION
       - image: cimg/postgres:15.3
         environment:
-          context: top-forum-backend
-          POSTGRES_USER: DB_USERNAME
-          POSTGRES_PASSWORD: DB_PASSWORD
-          POSTGRES_DB: TEST_DB
+          POSTGRES_USER: $DB_USERNAME
+          POSTGRES_PASSWORD: $DB_PASSWORD
+          POSTGRES_DB: $TEST_DB
 
     working_directory: ~/repo
 
