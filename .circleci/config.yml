@@ -1,0 +1,51 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: cimg/node:20.6.1
+        environment:
+          context: top-forum-backend
+          APP_HOST: top-forum.online
+          TEST_DB: top_forum_test_db
+          DB_USERNAME: postgres
+          DB_PASSWORD: 1234
+          DB_PORT: 5432
+          DB_HOST: localhost
+          MAIL_HOST: sandbox.smtp.mailtrap.io
+          MAIL_PORT: 2525
+          MAIL_USER: 6eaa403b95b9cd
+          MAIL_PASSWORD: 90218ef2a13e17
+          MAIL_DEFAULT: admin@top-forum.pl
+          JWT_PRIVATE_KEY: top-forum-secret-key
+          JWT_EXPIRATION: 1h
+      - image: cimg/postgres:15.3
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 1234
+          POSTGRES_DB: top_forum_test_db
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+
+      - run: npm install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run:
+        name: Wait for Postgres to start
+        command: dockerize -wait tcp://localhost:5432 -timeout 1m
+
+      - run: npm install sequelize-cli
+
+      - run: npm test
