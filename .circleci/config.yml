@@ -20,6 +20,7 @@ jobs:
           JWT_EXPIRATION: JWT_EXPIRATION
       - image: cimg/postgres:15.3
         environment:
+          context: top-forum-backend
           POSTGRES_USER: DB_USERNAME
           POSTGRES_PASSWORD: DB_PASSWORD
           POSTGRES_DB: TEST_DB
