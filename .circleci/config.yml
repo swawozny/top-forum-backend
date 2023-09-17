@@ -4,24 +4,24 @@ jobs:
     docker:
       - image: cimg/node:20.6.1
         environment:
-          APP_HOST: echo ${APP_HOST}
-          TEST_DB: echo ${TEST_DB}
-          DB_USERNAME: echo ${DB_USERNAME}
-          DB_PASSWORD: echo ${DB_PASSWORD}
-          DB_PORT: echo ${DB_PORT}
-          DB_HOST: echo ${DB_HOST}
-          MAIL_HOST: echo ${MAIL_HOST}
-          MAIL_PORT: echo ${MAIL_PORT}
-          MAIL_USER: echo {$MAIL_USER}
-          MAIL_PASSWORD: echo ${MAIL_PASSWORD}
-          MAIL_DEFAULT: echo ${MAIL_DEFAULT}
-          JWT_PRIVATE_KEY: echo ${JWT_PRIVATE_KEY}
-          JWT_EXPIRATION: echo ${JWT_EXPIRATION}
+          APP_HOST: echo $APP_HOST
+          TEST_DB: echo $TEST_DB
+          DB_USERNAME: echo $DB_USERNAME
+          DB_PASSWORD: echo ${DB_PASSWORD
+          DB_PORT: echo $DB_PORT
+          DB_HOST: echo $DB_HOST
+          MAIL_HOST: echo $MAIL_HOST
+          MAIL_PORT: echo $MAIL_PORT
+          MAIL_USER: echo $MAIL_USER
+          MAIL_PASSWORD: echo $MAIL_PASSWORD
+          MAIL_DEFAULT: echo $MAIL_DEFAULT
+          JWT_PRIVATE_KEY: echo $JWT_PRIVATE_KEY
+          JWT_EXPIRATION: echo $JWT_EXPIRATION
       - image: cimg/postgres:15.3
         environment:
-          POSTGRES_USER: echo ${DB_USERNAME}
-          POSTGRES_PASSWORD: echo ${DB_PASSWORD}
-          POSTGRES_DB: echo ${TEST_DB}
+          POSTGRES_USER: echo $DB_USERNAME
+          POSTGRES_PASSWORD: echo $DB_PASSWORD
+          POSTGRES_DB: echo $TEST_DB
 
     working_directory: ~/repo
 
