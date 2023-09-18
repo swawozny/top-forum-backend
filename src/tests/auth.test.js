@@ -225,6 +225,6 @@ describe("Auth endpoints tests", () => {
     });
 
     afterEach(async () => {
-        await User.truncate();
+        await User.truncate({cascade: true});
     });
 });
