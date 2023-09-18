@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
                     defaultValue: 1
                 }
             });
+
+            User.hasMany(models.Forum, {
+                foreignKey: 'creatorId',
+            });
         }
     }
 
