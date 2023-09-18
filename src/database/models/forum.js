@@ -6,7 +6,8 @@ module.exports = (sequelize, DataTypes) => {
     class Forum extends Model {
         static associate(models) {
             Forum.belongsTo(models.User, {
-                foreignKey: 'creatorId'
+                foreignKey: 'creatorId',
+                onDelete: 'CASCADE'
             });
 
             Forum.hasMany(models.Forum, {as: 'children', foreignKey: 'parentForumId'});

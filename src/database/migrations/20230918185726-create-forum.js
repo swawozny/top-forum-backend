@@ -20,6 +20,7 @@ module.exports = {
             },
             creatorId: {
                 type: Sequelize.INTEGER,
+                onDelete: 'CASCADE',
                 allowNull: false,
                 references: {
                     model: 'Users',
