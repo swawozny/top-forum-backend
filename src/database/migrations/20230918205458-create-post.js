@@ -16,11 +16,23 @@ module.exports = {
             },
             topicId: {
                 type: Sequelize.INTEGER,
-                allowNull: false
+                onDelete: 'CASCADE',
+                allowNull: false,
+                references: {
+                    model: 'Topics',
+                    key: 'id',
+                    as: 'topicId',
+                }
             },
             authorId: {
                 type: Sequelize.INTEGER,
-                allowNull: false
+                onDelete: 'CASCADE',
+                allowNull: false,
+                references: {
+                    model: 'Users',
+                    key: 'id',
+                    as: 'authorId',
+                }
             },
             createdAt: {
                 allowNull: false,

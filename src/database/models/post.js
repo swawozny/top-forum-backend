@@ -5,6 +5,15 @@ const {
 module.exports = (sequelize, DataTypes) => {
     class Post extends Model {
         static associate(models) {
+            Post.belongsTo(models.User, {
+                foreignKey: 'authorId',
+                onDelete: 'CASCADE'
+            });
+
+            Post.belongsTo(models.Topic, {
+                foreignKey: 'forumId',
+                onDelete: 'CASCADE'
+            });
         }
     }
 

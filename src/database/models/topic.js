@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'forumId',
         onDelete: 'CASCADE'
       });
+
+      Topic.hasMany(models.Post, {
+        foreignKey: 'topicId',
+      });
     }
   }
   Topic.init({
