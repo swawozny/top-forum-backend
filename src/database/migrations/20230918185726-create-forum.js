@@ -30,6 +30,7 @@ module.exports = {
             },
             parentForumId: {
                 type: Sequelize.INTEGER,
+                onDelete: 'CASCADE',
                 allowNull: true,
                 references: {
                     model: 'Forums',

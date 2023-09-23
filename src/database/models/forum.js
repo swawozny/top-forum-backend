@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             });
 
             Forum.hasMany(models.Forum, {as: 'children', foreignKey: 'parentForumId'});
-            Forum.belongsTo(models.Forum, {as: 'parent', foreignKey: 'parentForumId'});
+            Forum.belongsTo(models.Forum, {as: 'parent', foreignKey: 'parentForumId', onDelete: "CASCADE"});
             Forum.hasMany(models.Topic, {
                 foreignKey: 'forumId',
             });

@@ -6,4 +6,6 @@ const router = express.Router();
 
 router.get('/forums', forumController.getForums);
 
+router.delete('/forum/:id', forumController.deleteForum);
+
 module.exports = router;
