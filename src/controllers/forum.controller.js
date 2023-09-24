@@ -135,3 +135,41 @@ exports.createForum = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.updateForum = async (req, res, next) => {
+  try {
+      const {id} = req.params;
+      const {parentForumId, title, description} = req.body;
+
+      const forum = await Forum.findByPk(id);
+
+      if (!forum) {
+          throw new ApiError(StatusCodes.NOT_FOUND, 'Forum id is not correct!');
+      }
+
+      const parentForum = await Forum.findByPk(parentForumId);
+
+      if (parentForumId !== null && !parentForum) {
+          throw new ApiError(StatusCodes.NOT_FOUND, 'New parent forum id is not correct!');
+      }
+
+      await forum.update({
+          parentForumId,
+          title,
+          description
+      });
+
+      await forum.save();
+
+      return res.status(StatusCodes.OK).json({
+          forumId: id,
+          message: 'Forum updated.'
+      });
+
+  } catch (error) {
+      if (!error.statusCode) {
+          error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+      }
+      next(error);
+  }
+};

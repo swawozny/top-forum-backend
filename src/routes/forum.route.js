@@ -14,4 +14,6 @@ router.delete('/forum/:id', forumController.deleteForum);
 
 router.post('/forum', validateForumData, checkValidationErrors, forumController.createForum);
 
+router.put('/forum/:id', validateForumData, checkValidationErrors, forumController.updateForum);
+
 module.exports = router;
