@@ -5,7 +5,7 @@ const {StatusCodes} = require("http-status-codes");
 const {faker} = require("@faker-js/faker");
 
 const server = require("../server");
-const {Forum, User} = require("../database/models");
+const {Forum, User, Topic} = require("../database/models");
 
 const EXAMPLE_USER = {
     id: faker.number.int({min: 1, max: 10}),
@@ -28,6 +28,12 @@ const EXAMPLE_SECOND_FORUM = {
     title: faker.lorem.word({length: {min: 10, max: 20}}),
     description: faker.lorem.sentence({min: 3, max: 5}),
     creatorId: EXAMPLE_USER.id
+};
+
+const EXAMPLE_TOPIC = {
+    title: faker.lorem.word({length: {min: 10, max: 20}}),
+    authorId: EXAMPLE_USER.id,
+    forumId: EXAMPLE_USER.id
 };
 
 const SALT_LENGTH = 12;
@@ -170,6 +176,72 @@ describe("Forum endpoints tests", () => {
             const randomForumId = faker.number.int({min: 1, max: 10});
             const result = await request(server)
                 .delete(`/forum/${randomForumId}`);
+
+            expect(result.statusCode).toEqual(StatusCodes.NOT_FOUND);
+            expect(result.body.message).toEqual("Forum id is not correct!");
+        });
+
+        afterEach(async () => {
+            await Forum.truncate({cascade: true})
+        });
+    });
+
+    describe("GET /forum/:id", () => {
+        it("should return forum with one subforum", async () => {
+            const firstForum = await Forum.create(EXAMPLE_FIRST_FORUM);
+
+            await firstForum.save();
+
+            const secondForum = await Forum.create({
+                ...EXAMPLE_SECOND_FORUM,
+                parentForumId: firstForum.id
+            });
+
+            await secondForum.save();
+
+            const result = await request(server).get(`/forum/${firstForum.id.toString()}`);
+
+            const {body, statusCode} = result;
+
+            expect(statusCode).toEqual(StatusCodes.OK);
+            expect(body.id).toEqual(firstForum.id);
+            expect(body.title).toEqual(firstForum.title);
+            expect(body.description).toEqual(firstForum.description);
+
+            expect(body.children.at(0).id).toEqual(secondForum.id);
+            expect(body.children.at(0).title).toEqual(secondForum.title);
+            expect(body.children.at(0).description).toEqual(secondForum.description);
+        });
+
+        it("should return forum with one topic", async () => {
+            const forum = await Forum.create(EXAMPLE_FIRST_FORUM);
+
+            await forum.save();
+
+            const topic = await Topic.create({
+                ...EXAMPLE_TOPIC,
+                forumId: forum.id
+            });
+
+            await topic.save();
+
+            const result = await request(server).get(`/forum/${forum.id.toString()}`);
+
+            const {body, statusCode} = result;
+
+            expect(statusCode).toEqual(StatusCodes.OK);
+            expect(body.id).toEqual(forum.id);
+            expect(body.title).toEqual(forum.title);
+            expect(body.description).toEqual(forum.description);
+
+            expect(body.Topics.at(0).id).toEqual(topic.id);
+            expect(body.Topics.at(0).title).toEqual(topic.title);
+            expect(body.Topics.at(0).description).toEqual(topic.description);
+        });
+
+        it("should throw error that forum id is not correct", async () => {
+            const randomForumId = faker.number.int({min: 1, max: 10});
+            const result = await request(server).get(`/forum/${randomForumId}`);
 
             expect(result.statusCode).toEqual(StatusCodes.NOT_FOUND);
             expect(result.body.message).toEqual("Forum id is not correct!");
