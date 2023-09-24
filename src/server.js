@@ -36,6 +36,6 @@ app.use('/auth', authRoutes);
 app.use(forumRoutes);
 app.use(errorHandler);
 
-app.listen(PORT);
+const server = app.listen(PORT);
 
-module.exports = app;
+module.exports = server;

@@ -2,16 +2,18 @@ const request = require("supertest");
 const {expect} = require("expect");
 const {StatusCodes} = require("http-status-codes");
 
-const app = require("../server");
+const server = require("../server");
 const {User} = require("../database/models");
 const bcrypt = require("bcrypt");
+const {faker} = require("@faker-js/faker");
 
 const EXAMPLE_USER = {
-    username: "test",
-    email: "test@test.pl",
-    password: "test1234",
-    activationCode: "testActivationCode",
-    restoringCode: "testRestoringCode",
+    id: faker.number.int({min: 1, max: 10}),
+    username: faker.internet.userName(),
+    email: faker.internet.email(),
+    password: faker.internet.password({length: 10}),
+    activationCode: faker.string.sample({min: 5, max: 10}),
+    restoringCode: faker.string.sample({min: 5, max: 10}),
     isActive: true
 };
 
@@ -19,7 +21,7 @@ const SALT_LENGTH = 12;
 describe("Auth endpoints tests", () => {
     describe("POST /auth/signup", () => {
         it("should create new user", async () => {
-            const result = await request(app)
+            const result = await request(server)
                 .post("/auth/signup")
                 .send({
                     email: EXAMPLE_USER.email,
@@ -32,7 +34,7 @@ describe("Auth endpoints tests", () => {
         });
 
         it("should throw validation error", async () => {
-            const result = await request(app)
+            const result = await request(server)
                 .post("/auth/signup")
                 .send({
                     email: "test",
@@ -54,7 +56,7 @@ describe("Auth endpoints tests", () => {
 
             await user.save();
 
-            const loginResult = await request(app)
+            const loginResult = await request(server)
                 .post("/auth/login")
                 .send({
                     email: EXAMPLE_USER.email,
@@ -70,7 +72,7 @@ describe("Auth endpoints tests", () => {
 
             await user.save();
 
-            const loginResult = await request(app)
+            const loginResult = await request(server)
                 .post("/auth/login")
                 .send({
                     email: EXAMPLE_USER.email,
@@ -94,7 +96,7 @@ describe("Auth endpoints tests", () => {
 
             await user.save();
 
-            const result = await request(app)
+            const result = await request(server)
                 .post("/auth/confirm-email")
                 .send({
                     email: EXAMPLE_USER.email,
@@ -116,7 +118,7 @@ describe("Auth endpoints tests", () => {
 
             await user.save();
 
-            const result = await request(app)
+            const result = await request(server)
                 .post("/auth/confirm-email")
                 .send({
                     email: EXAMPLE_USER.email,
@@ -139,7 +141,7 @@ describe("Auth endpoints tests", () => {
 
             await user.save();
 
-            const result = await request(app)
+            const result = await request(server)
                 .post("/auth/confirm-email")
                 .send({
                     email: EXAMPLE_USER.email,
@@ -164,7 +166,7 @@ describe("Auth endpoints tests", () => {
 
             await user.save();
 
-            const result = await request(app)
+            const result = await request(server)
                 .post("/auth/try-reset-password")
                 .send({
                     email: EXAMPLE_USER.email,
@@ -191,7 +193,7 @@ describe("Auth endpoints tests", () => {
 
             const newPassword = "newTestPassword";
 
-            const result = await request(app)
+            const result = await request(server)
                 .post(`/auth/reset-password?uid=${user.id.toString()}&restoringCode=${EXAMPLE_USER.restoringCode}`)
                 .send({
                     password: newPassword
@@ -213,7 +215,7 @@ describe("Auth endpoints tests", () => {
             await user.save();
             const newPassword = "newTestPassword";
 
-            const result = await request(app)
+            const result = await request(server)
                 .post(`/auth/reset-password?uid=${user.id.toString()}&restoringCode=${EXAMPLE_USER.restoringCode}`)
                 .send({
                     password: newPassword
@@ -226,5 +228,8 @@ describe("Auth endpoints tests", () => {
 
     afterEach(async () => {
         await User.truncate({cascade: true});
+    });
+    afterAll(() => {
+        server.close();
     });
 });

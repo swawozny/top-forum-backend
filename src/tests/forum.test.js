@@ -2,31 +2,31 @@ const request = require("supertest");
 const bcrypt = require("bcrypt");
 const {expect} = require("expect");
 const {StatusCodes} = require("http-status-codes");
+const {faker} = require("@faker-js/faker");
 
-const app = require("../server");
+const server = require("../server");
 const {Forum, User} = require("../database/models");
 
-
 const EXAMPLE_USER = {
-    id: 1,
-    username: "user",
-    email: "user@user.pl",
-    password: "user123",
-    activationCode: "test",
-    restoringCode: "test",
+    id: faker.number.int({min: 1, max: 10}),
+    username: faker.internet.userName(),
+    email: faker.internet.email(),
+    password: faker.internet.password({length: 10}),
+    activationCode: faker.string.sample({min: 5, max: 10}),
+    restoringCode: faker.string.sample({min: 5, max: 10}),
     isActive: true
 };
 
 const EXAMPLE_FIRST_FORUM = {
-    title: 'first forum',
-    description: 'first forum description',
+    title: faker.lorem.word({length: {min: 10, max: 20}}),
+    description: faker.lorem.sentence({min: 3, max: 5}),
     creatorId: EXAMPLE_USER.id
 };
 
 
 const EXAMPLE_SECOND_FORUM = {
-    title: 'second forum',
-    description: 'second forum description',
+    title: faker.lorem.word({length: {min: 10, max: 20}}),
+    description: faker.lorem.sentence({min: 3, max: 5}),
     creatorId: EXAMPLE_USER.id
 };
 
@@ -44,7 +44,7 @@ describe("Forum endpoints tests", () => {
         });
 
         it("should return empty array", async () => {
-            const result = await request(app).get("/forums");
+            const result = await request(server).get("/forums");
 
             const {body, statusCode} = result;
 
@@ -61,17 +61,17 @@ describe("Forum endpoints tests", () => {
 
             await secondForum.save();
 
-            const result = await request(app).get("/forums");
+            const result = await request(server).get("/forums");
 
             const {statusCode, body} = result;
             const {forums} = body;
 
             expect(statusCode).toEqual(StatusCodes.OK);
             expect(forums).toHaveLength(2);
-            expect(forums.at(1).title).toEqual(EXAMPLE_SECOND_FORUM.title);
-            expect(forums.at(1).description).toEqual(EXAMPLE_SECOND_FORUM.description);
-            expect(forums.at(0).title).toEqual(EXAMPLE_FIRST_FORUM.title);
-            expect(forums.at(0).description).toEqual(EXAMPLE_FIRST_FORUM.description);
+            expect(forums.at(0).title).toEqual(EXAMPLE_SECOND_FORUM.title);
+            expect(forums.at(0).description).toEqual(EXAMPLE_SECOND_FORUM.description);
+            expect(forums.at(1).title).toEqual(EXAMPLE_FIRST_FORUM.title);
+            expect(forums.at(1).description).toEqual(EXAMPLE_FIRST_FORUM.description);
         });
 
         it("should return array with forum and subForum", async () => {
@@ -87,7 +87,7 @@ describe("Forum endpoints tests", () => {
 
             await subForum.save();
 
-            const result = await request(app).get("/forums");
+            const result = await request(server).get("/forums");
 
             const {statusCode, body} = result;
             const {forums} = body;
@@ -108,6 +108,7 @@ describe("Forum endpoints tests", () => {
 
         afterAll(async () => {
             await User.truncate({cascade: true});
+            server.close();
         });
     });
 });
