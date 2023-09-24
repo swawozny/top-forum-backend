@@ -77,7 +77,6 @@ describe("Forum endpoints tests", () => {
         it("should return array with forum and subForum", async () => {
             const forum = await Forum.create(EXAMPLE_FIRST_FORUM);
 
-
             await forum.save();
 
             const subForum = await Forum.create({
@@ -146,7 +145,39 @@ describe("Forum endpoints tests", () => {
         afterEach(async () => {
             await Forum.truncate({cascade: true})
         });
+    });
 
+    describe("DELETE /forum/:id", () => {
+        it("should delete forum", async () => {
+            const forum = await Forum.create(EXAMPLE_FIRST_FORUM);
+
+            await forum.save();
+
+            const forumId = forum.id.toString();
+
+            const result = await request(server)
+                .delete(`/forum/${forumId}`);
+
+            const deletedForum = await Forum.findByPk(forumId);
+
+            expect(result.statusCode).toEqual(StatusCodes.OK);
+            expect(result.body.message).toEqual("Forum deleted.");
+            expect(deletedForum).toEqual(null);
+
+        });
+
+        it("should throw error that forum id is not correct", async () => {
+            const randomForumId = faker.number.int({min: 1, max: 10});
+            const result = await request(server)
+                .delete(`/forum/${randomForumId}`);
+
+            expect(result.statusCode).toEqual(StatusCodes.NOT_FOUND);
+            expect(result.body.message).toEqual("Forum id is not correct!");
+        });
+
+        afterEach(async () => {
+            await Forum.truncate({cascade: true})
+        });
     });
 
     afterAll(async () => {
