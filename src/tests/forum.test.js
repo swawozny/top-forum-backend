@@ -33,15 +33,15 @@ const EXAMPLE_SECOND_FORUM = {
 const SALT_LENGTH = 12;
 
 describe("Forum endpoints tests", () => {
+    beforeAll(async () => {
+        const hashedPassword = await bcrypt.hash(EXAMPLE_USER.password, SALT_LENGTH);
+
+        const user = await User
+            .create({...EXAMPLE_USER, password: hashedPassword});
+
+        await user.save();
+    });
     describe("GET /forums", () => {
-        beforeAll(async () => {
-            const hashedPassword = await bcrypt.hash(EXAMPLE_USER.password, SALT_LENGTH);
-
-            const user = await User
-                .create({...EXAMPLE_USER, password: hashedPassword});
-
-            await user.save();
-        });
 
         it("should return empty array", async () => {
             const result = await request(server).get("/forums");
@@ -101,14 +101,56 @@ describe("Forum endpoints tests", () => {
             expect(children.at(0).title).toEqual(EXAMPLE_SECOND_FORUM.title);
             expect(children.at(0).description).toEqual(EXAMPLE_SECOND_FORUM.description);
         });
+        afterEach(async () => {
+            await Forum.truncate({cascade: true})
+        });
+    });
 
+    describe("POST /forum", () => {
+        it("should create new forum", async () => {
+            const result = await request(server)
+                .post("/forum")
+                .send({
+                    ...EXAMPLE_FIRST_FORUM,
+                    parentForumId: null
+                });
+
+            expect(result.statusCode).toEqual(StatusCodes.CREATED);
+            expect(result.body.message).toEqual("Forum created.");
+        });
+
+        it("should throw validation error", async () => {
+            const result = await request(server)
+                .post("/forum")
+                .send({
+                    ...EXAMPLE_FIRST_FORUM,
+                    title: faker.lorem.word({length: 3}),
+                    parentForumId: null
+                });
+
+            expect(result.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+            expect(result.body.message).toEqual("Request data validation error!");
+        });
+
+        it("should throw error parent forum id is not correct", async () => {
+            const result = await request(server)
+                .post("/forum")
+                .send({
+                    ...EXAMPLE_FIRST_FORUM,
+                    parentForumId: 4
+                });
+
+            expect(result.statusCode).toEqual(StatusCodes.NOT_FOUND);
+            expect(result.body.message).toEqual("Parent forum id is not correct!");
+        });
         afterEach(async () => {
             await Forum.truncate({cascade: true})
         });
 
-        afterAll(async () => {
-            await User.truncate({cascade: true});
-            server.close();
-        });
+    });
+
+    afterAll(async () => {
+        await User.truncate({cascade: true});
+        server.close();
     });
 });
