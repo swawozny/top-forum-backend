@@ -12,8 +12,8 @@ const EXAMPLE_USER = {
     username: faker.internet.userName(),
     email: faker.internet.email(),
     password: faker.internet.password({length: 10}),
-    activationCode: faker.string.sample({min: 5, max: 10}),
-    restoringCode: faker.string.sample({min: 5, max: 10}),
+    activationCode: faker.word.sample({min: 5, max: 10}),
+    restoringCode: faker.word.sample({min: 5, max: 10}),
     isActive: true
 };
 

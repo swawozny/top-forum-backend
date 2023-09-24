@@ -252,6 +252,70 @@ describe("Forum endpoints tests", () => {
         });
     });
 
+    describe("PUT /forum/:id", () => {
+        it("should update forum", async () => {
+            const forum = await Forum.create(EXAMPLE_FIRST_FORUM);
+
+            await forum.save();
+
+            const {id, parentForumId, creatorId} = forum;
+
+            const result = await request(server)
+                .put(`/forum/${id}`)
+                .send({
+                    ...EXAMPLE_SECOND_FORUM,
+                    parentForumId,
+                    creatorId
+                });
+
+            const updatedForum = await Forum.findByPk(id.toString());
+
+            expect(result.statusCode).toEqual(StatusCodes.OK);
+            expect(result.body.message).toEqual("Forum updated.");
+            expect(result.body.forumId).toEqual(id.toString());
+            expect(updatedForum.title).toEqual(EXAMPLE_SECOND_FORUM.title);
+            expect(updatedForum.description).toEqual(EXAMPLE_SECOND_FORUM.description);
+        });
+
+        it("should throw validation error", async () => {
+            const forum = await Forum.create(EXAMPLE_FIRST_FORUM);
+
+            await forum.save();
+
+            const {id, parentForumId, creatorId} = forum;
+
+            const result = await request(server)
+                .put(`/forum/${id}`)
+                .send({
+                    ...EXAMPLE_SECOND_FORUM,
+                    title: faker.word.sample({length: 3}),
+                    parentForumId,
+                    creatorId
+                });
+
+            expect(result.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+            expect(result.body.message).toEqual("Request data validation error!");
+        });
+
+        it("should throw error that forum id is not correct", async () => {
+            const randomForumId = faker.number.int({min: 1, max: 10});
+
+            const result = await request(server)
+                .put(`/forum/${randomForumId}`)
+                .send({
+                    ...EXAMPLE_SECOND_FORUM,
+                    parentForumId: null
+                });
+
+            expect(result.statusCode).toEqual(StatusCodes.NOT_FOUND);
+            expect(result.body.message).toEqual("Forum id is not correct!");
+        });
+
+        afterEach(async () => {
+            await Forum.truncate({cascade: true})
+        });
+    });
+
     afterAll(async () => {
         await User.truncate({cascade: true});
         server.close();
