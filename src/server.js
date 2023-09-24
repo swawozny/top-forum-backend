@@ -7,7 +7,7 @@ const cors = require('cors');
 dotenv.config();
 const PORT = process.env.PORT || 8080;
 
-const {authRoutes} = require('./routes');
+const {authRoutes, forumRoutes} = require('./routes');
 const {errorHandler} = require('./middlewares/errorHandler');
 
 const app = express();
@@ -33,8 +33,9 @@ app.use(
 );
 
 app.use('/auth', authRoutes);
+app.use(forumRoutes);
 app.use(errorHandler);
 
-app.listen(PORT);
+const server = app.listen(PORT);
 
-module.exports = app;
+module.exports = server;
