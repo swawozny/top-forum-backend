@@ -20,7 +20,7 @@ exports.getForums = async (req, res, next) => {
 
         return res
             .status(StatusCodes.OK)
-            .json({forums});
+            .json(forums);
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
