@@ -55,7 +55,7 @@ describe("Forum endpoints tests", () => {
             const {body, statusCode} = result;
 
             expect(statusCode).toEqual(StatusCodes.OK);
-            expect(body.forums).toHaveLength(0);
+            expect(body).toHaveLength(0);
         });
 
         it("should return array with two main forums", async () => {
@@ -70,7 +70,7 @@ describe("Forum endpoints tests", () => {
             const result = await request(server).get("/forums");
 
             const {statusCode, body} = result;
-            const {forums} = body;
+            const forums = body;
 
             expect(statusCode).toEqual(StatusCodes.OK);
             expect(forums).toHaveLength(2);
@@ -95,7 +95,7 @@ describe("Forum endpoints tests", () => {
             const result = await request(server).get("/forums");
 
             const {statusCode, body} = result;
-            const {forums} = body;
+            const forums = body;
             const {title, description, children} = forums.at(0);
 
             expect(statusCode).toEqual(StatusCodes.OK);
