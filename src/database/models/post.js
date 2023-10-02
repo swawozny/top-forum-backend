@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             });
 
             Post.belongsTo(models.Topic, {
-                foreignKey: 'forumId',
+                foreignKey: 'topicId',
                 onDelete: 'CASCADE'
             });
         }
