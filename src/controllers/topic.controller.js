@@ -1,6 +1,6 @@
 const {StatusCodes} = require("http-status-codes");
 
-const {Topic, Post, User, Role} = require("../database/models");
+const {sequelize, Topic, Post, User, Role, Forum} = require("../database/models");
 const ApiError = require("../errors/apiError");
 
 const POSTS_PER_PAGE = 25;
@@ -52,6 +52,44 @@ exports.getTopic = async (req, res, next) => {
             topic,
             page,
             totalPages
+        });
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+        }
+        next(error);
+    }
+};
+
+exports.createTopic = async (req, res, next) => {
+    try {
+        await sequelize.transaction(async transaction => {
+            const {title, firstPostContent, forumId} = req.body;
+            const {userId} = req;
+
+            const forum = await Forum.findByPk(forumId);
+
+            if (!forum || forum.parentForumId === null) {
+                throw new ApiError(StatusCodes.BAD_REQUEST, "Forum id is not correct!");
+            }
+
+            const topic = await Topic.create({
+                title,
+                authorId: userId,
+                forumId
+            }, {transaction});
+
+            await Post.create({
+                authorId: userId,
+                topicId: topic.id,
+                content: firstPostContent
+            }, {transaction});
+
+            return res.status(StatusCodes.CREATED).json({
+                message: "Topic created!",
+                topicId: topic.id.toString()
+            });
         });
 
     } catch (error) {
