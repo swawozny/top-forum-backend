@@ -99,3 +99,25 @@ exports.createTopic = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.deleteTopic = async (req, res, next) => {
+    try {
+        const {id} = req.params;
+        const topic = await Topic.findByPk(id);
+
+        if (!topic) {
+            throw new ApiError(StatusCodes.NOT_FOUND, "Topic id is not correct!");
+        }
+
+        await topic.destroy();
+
+        return res.status(StatusCodes.OK).json({message: "Topic deleted."});
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+        }
+        next(error);
+    }
+
+};

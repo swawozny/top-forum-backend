@@ -17,4 +17,8 @@ const validateTopicData = [
     validateId
 ];
 
-module.exports = {validateTopicData};
+module.exports = {
+    validatePage,
+    validateId,
+    validateTopicData
+};
