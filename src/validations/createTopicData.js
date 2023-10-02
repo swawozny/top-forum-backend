@@ -29,5 +29,8 @@ const validateCreateTopicData = [
 ];
 
 module.exports = {
+    validateForumId,
+    validateTitle,
+    validateFirstPostContent,
     validateCreateTopicData
 };

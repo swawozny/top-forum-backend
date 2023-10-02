@@ -119,5 +119,34 @@ exports.deleteTopic = async (req, res, next) => {
         }
         next(error);
     }
+};
 
+exports.updateTopic = async (req, res, next) => {
+  try {
+      const {id} = req.params;
+      const {title} = req.body;
+
+      const topic = await Topic.findByPk(id);
+
+      if (!topic) {
+          throw new ApiError(StatusCodes.NOT_FOUND, 'Topic id is not correct!');
+      }
+
+      await topic.update({
+          title
+      });
+
+      await topic.save();
+
+      return res.status(StatusCodes.OK).json({
+          topicId: id,
+          message: 'Topic updated.'
+      });
+
+  }  catch (error) {
+      if (!error.statusCode) {
+          error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+      }
+      next(error);
+  }
 };
