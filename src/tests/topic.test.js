@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 
 const server = require("../server");
 const {User, Topic, Forum, Post} = require("../database/models");
+const {createToken} = require("../services/jwt");
 
 const EXAMPLE_USER = {
     id: faker.number.int({min: 1, max: 10}),
@@ -22,6 +23,14 @@ const EXAMPLE_FORUM = {
     title: faker.lorem.word({length: {min: 10, max: 20}}),
     description: faker.lorem.sentence({min: 3, max: 5}),
     creatorId: EXAMPLE_USER.id
+};
+
+const EXAMPLE_SUBFORUM = {
+    id: faker.number.int({min: 15, max: 30}),
+    title: faker.lorem.word({length: {min: 10, max: 20}}),
+    description: faker.lorem.sentence({min: 3, max: 5}),
+    creatorId: EXAMPLE_USER.id,
+    parentForumId: EXAMPLE_FORUM.id
 };
 
 const EXAMPLE_TOPIC = {
@@ -50,6 +59,9 @@ describe("Topic endpoints tests", () => {
 
         const forum = await Forum.create({...EXAMPLE_FORUM});
         await forum.save();
+
+        const subForum = await Forum.create({...EXAMPLE_SUBFORUM});
+        await subForum.save();
     });
 
     describe("GET /topic", () => {
@@ -171,8 +183,6 @@ describe("Topic endpoints tests", () => {
 
             const {body, statusCode} = result;
 
-            console.log(body);
-
             expect(statusCode).toEqual(StatusCodes.BAD_REQUEST);
             expect(body.message).toEqual("Request data validation error!");
         });
@@ -194,6 +204,78 @@ describe("Topic endpoints tests", () => {
             expect(updatedTopic.title).toEqual(newTitle);
             expect(statusCode).toEqual(StatusCodes.OK);
             expect(body.message).toEqual("Topic updated.");
+        });
+
+        afterEach(async () => {
+            await Topic.truncate({cascade: true});
+        });
+    });
+
+    describe("POST /topic", () => {
+        it("should not allow the creation of a topic in the main forum", async () => {
+            const mainForum = await Forum.findByPk(EXAMPLE_FORUM.id);
+
+            const authToken = createToken({
+                email: EXAMPLE_USER.email,
+                userId: EXAMPLE_USER.id.toString()
+            });
+
+            const result = await request(server)
+                .post("/topic")
+                .set("Authorization", `Bearer ${authToken}`)
+                .send({
+                    title: EXAMPLE_TOPIC.title,
+                    forumId: EXAMPLE_FORUM.id,
+                    firstPostContent: faker.string.sample({min: 70, max: 300})
+                });
+
+            const {body, statusCode} = result;
+
+            expect(mainForum.parentForumId).toEqual(null);
+            expect(body.message).toEqual("Forum id is not correct!");
+            expect(statusCode).toEqual(StatusCodes.BAD_REQUEST);
+        });
+
+        it("should throw validation error", async () => {
+            const authToken = createToken({
+                email: EXAMPLE_USER.email,
+                userId: EXAMPLE_USER.id.toString()
+            });
+
+            const result = await request(server)
+                .post("/topic")
+                .set("Authorization", `Bearer ${authToken}`)
+                .send({
+                    title: EXAMPLE_TOPIC.title,
+                    forumId: EXAMPLE_SUBFORUM.id,
+                    firstPostContent: faker.string.sample({min: 20, max: 30})
+                });
+
+            const {body, statusCode} = result;
+
+            expect(statusCode).toEqual(StatusCodes.BAD_REQUEST);
+            expect(body.message).toEqual("Request data validation error!");
+        });
+
+        it("should create new topic", async () => {
+            const authToken = createToken({
+                email: EXAMPLE_USER.email,
+                userId: EXAMPLE_USER.id.toString()
+            });
+
+            const result = await request(server)
+                .post("/topic")
+                .set("Authorization", `Bearer ${authToken}`)
+                .send({
+                    title: EXAMPLE_TOPIC.title,
+                    forumId: EXAMPLE_SUBFORUM.id,
+                    firstPostContent: faker.string.sample({min: 70, max: 300})
+                });
+
+            const {body, statusCode} = result;
+
+            expect(statusCode).toEqual(StatusCodes.CREATED);
+            expect(body.message).toEqual("Topic created!");
         });
 
         afterEach(async () => {
