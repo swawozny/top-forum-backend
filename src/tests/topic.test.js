@@ -133,6 +133,35 @@ describe("Topic endpoints tests", () => {
         });
     });
 
+    describe("DELETE /topic", () => {
+        it("should return topic id is not correct error", async () => {
+            const randomTopicId = faker.number.int({min: 1, max: 10});
+
+            const result = await request(server).delete(`/topic/${randomTopicId}`);
+
+            const {body, statusCode} = result;
+
+            expect(statusCode).toEqual(StatusCodes.NOT_FOUND);
+            expect(body.message).toEqual("Topic id is not correct!");
+        });
+
+        it("should delete topic", async () => {
+            const topic = await Topic.create({...EXAMPLE_TOPIC});
+            await topic.save();
+            const topicId = topic.id;
+
+            const result = await request(server).delete(`/topic/${topicId}`);
+
+            const topicAfterDelete = await Topic.findByPk(topicId);
+
+            const {body, statusCode} = result;
+
+            expect(topicAfterDelete).toEqual(null);
+            expect(statusCode).toEqual(StatusCodes.OK);
+            expect(body.message).toEqual("Topic deleted.");
+        });
+    });
+
     afterAll(async () => {
         await User.truncate({cascade: true});
         await Forum.truncate({cascade: true});
