@@ -30,13 +30,13 @@ const EXAMPLE_TOPIC = {
     forumId: EXAMPLE_FORUM.id
 };
 
-const EXAMPLE_FIRST_TOPIC = {
-    content: faker.lorem.sentence({min: 3, max: 5}),
+const EXAMPLE_FIRST_POST = {
+    content: faker.lorem.sentence({min: 10, max: 20}),
     authorId: EXAMPLE_USER.id
 };
 
-const EXAMPLE_SECOND_TOPIC = {
-    content: faker.lorem.sentence({min: 3, max: 5}),
+const EXAMPLE_SECOND_POST = {
+    content: faker.lorem.sentence({min: 10, max: 20}),
     authorId: EXAMPLE_USER.id
 };
 
@@ -94,10 +94,10 @@ describe("Topic endpoints tests", () => {
             const topic = await Topic.create({...EXAMPLE_TOPIC});
             await topic.save();
 
-            const firstPost = await Post.create({...EXAMPLE_FIRST_TOPIC, topicId: topic.id});
+            const firstPost = await Post.create({...EXAMPLE_FIRST_POST, topicId: topic.id});
             await firstPost.save();
 
-            const secondPost = await Post.create({...EXAMPLE_SECOND_TOPIC, topicId: topic.id});
+            const secondPost = await Post.create({...EXAMPLE_SECOND_POST, topicId: topic.id});
             await secondPost.save();
 
             const result = await request(server).get(`/topic/${topic.id}?page=1`);
@@ -110,9 +110,9 @@ describe("Topic endpoints tests", () => {
             expect(id).toEqual(topic.id);
             expect(Posts).toHaveLength(2);
             expect(Posts.at(0).id).toEqual(firstPost.id);
-            expect(Posts.at(0).content).toEqual(EXAMPLE_FIRST_TOPIC.content);
+            expect(Posts.at(0).content).toEqual(EXAMPLE_FIRST_POST.content);
             expect(Posts.at(1).id).toEqual(secondPost.id);
-            expect(Posts.at(1).content).toEqual(EXAMPLE_SECOND_TOPIC.content);
+            expect(Posts.at(1).content).toEqual(EXAMPLE_SECOND_POST.content);
         });
 
         it("should return page number is greater than total pages error", async () => {
@@ -159,6 +159,45 @@ describe("Topic endpoints tests", () => {
             expect(topicAfterDelete).toEqual(null);
             expect(statusCode).toEqual(StatusCodes.OK);
             expect(body.message).toEqual("Topic deleted.");
+        });
+    });
+
+    describe("PUT /topic", () => {
+        it("should return validation error", async () => {
+            const topic = await Topic.create({...EXAMPLE_TOPIC});
+            await topic.save();
+
+            const result = await request(server).put(`/topic/${topic.id}`);
+
+            const {body, statusCode} = result;
+
+            console.log(body);
+
+            expect(statusCode).toEqual(StatusCodes.BAD_REQUEST);
+            expect(body.message).toEqual("Request data validation error!");
+        });
+
+        it("should update topic", async () => {
+            const topic = await Topic.create({...EXAMPLE_TOPIC});
+            await topic.save();
+
+            const newTitle = faker.lorem.word({length: {min: 10, max: 20}});
+
+            const result = await request(server).put(`/topic/${topic.id}`).send({
+                title: newTitle
+            });
+
+            const updatedTopic = await Topic.findByPk(topic.id);
+
+            const {body, statusCode} = result;
+
+            expect(updatedTopic.title).toEqual(newTitle);
+            expect(statusCode).toEqual(StatusCodes.OK);
+            expect(body.message).toEqual("Topic updated.");
+        });
+
+        afterEach(async () => {
+            await Topic.truncate({cascade: true});
         });
     });
 
