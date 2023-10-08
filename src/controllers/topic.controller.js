@@ -42,7 +42,7 @@ exports.getTopic = async (req, res, next) => {
         }
 
         const totalPosts = await Post.count({where: {topicId: id}});
-        const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
+        const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE) || 1;
 
         if (page > totalPages) {
             throw new ApiError(StatusCodes.BAD_REQUEST, 'The page number is greater than total pages!');
