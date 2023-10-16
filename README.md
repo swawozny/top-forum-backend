@@ -3,7 +3,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/github_username/repo_name">
+  <a href="https://github.com/swawozny/top-forum-backend">
     <img src="https://i.postimg.cc/9QHyYjqF/logo.png" alt="Logo" width="340" height="80">
   </a>
 
@@ -60,14 +60,14 @@ The back-end of an application that enables users to exchange information, viewp
 - [bcrypt](https://www.npmjs.com/package/bcrypt): to hash password with a salt
 - [body-parser](https://www.npmjs.com/package/body-parser): to extract the information from incoming requests
 - [cors](https://www.npmjs.com/package/cors): to serve third-party origins
-- [dotenv](https://www.npmjs.com/package/cors): to retrieve .env config file
+- [dotenv](https://www.npmjs.com/package/dotenv): to retrieve .env config file
 - [express](https://expressjs.com): web application framework for Node.js
-- [express-validator](https://expressjs.com): to validate data from requests
-- [helmet](https://expressjs.com): to add request HTTP headers
-- [http-status-codes](https://expressjs.com): to return HTTP status codes
+- [express-validator](https://express-validator.github.io/docs): to validate data from requests
+- [helmet](https://www.npmjs.com/package/helmet): to add request HTTP headers
+- [http-status-codes](https://www.npmjs.com/package/http-status-codes): to return HTTP status codes
 - [nodemailer](https://www.npmjs.com/package/nodemailer): connect with virtual mailbox
-- [sequelize](https://www.npmjs.com/package/nodemailer): ORM
-- [xss-clean](https://www.npmjs.com/package/nodemailer): to sanitaze data
+- [sequelize](https://sequelize.org): ORM
+- [xss-clean](https://github.com/jsonmaur/xss-clean): to sanitaze data
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -174,6 +174,6 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Sebastian Wąwoźny - sebastianwawozny@wp.pl
 
-Project Link: [https://github.com/swawozny/top-forum-backend](https://github.com/github_username/repo_name)
+Project Link: [https://github.com/swawozny/top-forum-backend](https://github.com/swawozny/top-forum-backend)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
