@@ -96,15 +96,15 @@ describe("Forum endpoints tests", () => {
 
             const {statusCode, body} = result;
             const forums = body;
-            const {title, description, children} = forums.at(0);
+            const {title, description, subForums} = forums.at(0);
 
             expect(statusCode).toEqual(StatusCodes.OK);
             expect(forums).toHaveLength(1);
             expect(title).toEqual(EXAMPLE_FIRST_FORUM.title);
             expect(description).toEqual(EXAMPLE_FIRST_FORUM.description);
-            expect(children).toHaveLength(1);
-            expect(children.at(0).title).toEqual(EXAMPLE_SECOND_FORUM.title);
-            expect(children.at(0).description).toEqual(EXAMPLE_SECOND_FORUM.description);
+            expect(subForums).toHaveLength(1);
+            expect(subForums.at(0).title).toEqual(EXAMPLE_SECOND_FORUM.title);
+            expect(subForums.at(0).description).toEqual(EXAMPLE_SECOND_FORUM.description);
         });
         afterEach(async () => {
             await Forum.truncate({cascade: true})
@@ -208,9 +208,9 @@ describe("Forum endpoints tests", () => {
             expect(body.title).toEqual(firstForum.title);
             expect(body.description).toEqual(firstForum.description);
 
-            expect(body.children.at(0).id).toEqual(secondForum.id);
-            expect(body.children.at(0).title).toEqual(secondForum.title);
-            expect(body.children.at(0).description).toEqual(secondForum.description);
+            expect(body.subForums.at(0).id).toEqual(secondForum.id);
+            expect(body.subForums.at(0).title).toEqual(secondForum.title);
+            expect(body.subForums.at(0).description).toEqual(secondForum.description);
         });
 
         it("should return forum with one topic", async () => {
@@ -234,9 +234,9 @@ describe("Forum endpoints tests", () => {
             expect(body.title).toEqual(forum.title);
             expect(body.description).toEqual(forum.description);
 
-            expect(body.Topics.at(0).id).toEqual(topic.id);
-            expect(body.Topics.at(0).title).toEqual(topic.title);
-            expect(body.Topics.at(0).description).toEqual(topic.description);
+            expect(body.forumTopics.at(0).id).toEqual(topic.id);
+            expect(body.forumTopics.at(0).title).toEqual(topic.title);
+            expect(body.forumTopics.at(0).description).toEqual(topic.description);
         });
 
         it("should throw error that forum id is not correct", async () => {

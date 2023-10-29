@@ -31,7 +31,7 @@ exports.signUp = async (req, res, next) => {
                 username,
                 email,
                 password: hashedPassword,
-            activationCode: hashedActivationCode
+                activationCode: hashedActivationCode
             }
         );
 
