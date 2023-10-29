@@ -11,7 +11,7 @@ exports.getTopic = async (req, res, next) => {
         const {page} = req.query;
 
         if (page <= 0) {
-            throw new ApiError(StatusCodes.BAD_REQUEST, 'The page number is not correct!');
+            throw new ApiError(StatusCodes.BAD_REQUEST, "The page number is not correct!");
         }
 
         const topicAttributes = ["title", "createdAt", "updatedAt"];
@@ -21,10 +21,13 @@ exports.getTopic = async (req, res, next) => {
         const topic = await Topic.findByPk(id, {
             include: {
                 model: Post,
+                as: "topicPosts",
                 include: {
                     model: User,
+                    as: "postCreator",
                     include: {
                         model: Role,
+                        as: "userRole",
                         attributes: ["name"]
                     },
                     attributes: userAttributes
@@ -38,14 +41,14 @@ exports.getTopic = async (req, res, next) => {
         });
 
         if (!topic) {
-            throw new ApiError(StatusCodes.NOT_FOUND, 'Topic id is not correct!');
+            throw new ApiError(StatusCodes.NOT_FOUND, "Topic id is not correct!");
         }
 
         const totalPosts = await Post.count({where: {topicId: id}});
         const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE) || 1;
 
         if (page > totalPages) {
-            throw new ApiError(StatusCodes.BAD_REQUEST, 'The page number is greater than total pages!');
+            throw new ApiError(StatusCodes.BAD_REQUEST, "The page number is greater than total pages!");
         }
 
         return res.status(StatusCodes.OK).json({
@@ -129,7 +132,7 @@ exports.updateTopic = async (req, res, next) => {
       const topic = await Topic.findByPk(id);
 
       if (!topic) {
-          throw new ApiError(StatusCodes.NOT_FOUND, 'Topic id is not correct!');
+          throw new ApiError(StatusCodes.NOT_FOUND, "Topic id is not correct!");
       }
 
       await topic.update({
@@ -140,7 +143,7 @@ exports.updateTopic = async (req, res, next) => {
 
       return res.status(StatusCodes.OK).json({
           topicId: id,
-          message: 'Topic updated.'
+          message: "Topic updated."
       });
 
   }  catch (error) {

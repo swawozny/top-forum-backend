@@ -72,12 +72,12 @@ describe("Topic endpoints tests", () => {
             const result = await request(server).get(`/topic/${topic.id}?page=1`);
 
             const {body, statusCode} = result;
-            const {id, title, Posts} = body.topic;
+            const {id, title, topicPosts} = body.topic;
 
             expect(statusCode).toEqual(StatusCodes.OK);
             expect(title).toEqual(topic.title);
             expect(id).toEqual(topic.id);
-            expect(Posts).toHaveLength(0);
+            expect(topicPosts).toHaveLength(0);
         });
 
         it("should return topic id is not correct error", async () => {
@@ -115,16 +115,16 @@ describe("Topic endpoints tests", () => {
             const result = await request(server).get(`/topic/${topic.id}?page=1`);
 
             const {body, statusCode} = result;
-            const {id, title, Posts} = body.topic;
+            const {id, title, topicPosts} = body.topic;
 
             expect(statusCode).toEqual(StatusCodes.OK);
             expect(title).toEqual(topic.title);
             expect(id).toEqual(topic.id);
-            expect(Posts).toHaveLength(2);
-            expect(Posts.at(0).id).toEqual(firstPost.id);
-            expect(Posts.at(0).content).toEqual(EXAMPLE_FIRST_POST.content);
-            expect(Posts.at(1).id).toEqual(secondPost.id);
-            expect(Posts.at(1).content).toEqual(EXAMPLE_SECOND_POST.content);
+            expect(topicPosts).toHaveLength(2);
+            expect(topicPosts.at(0).id).toEqual(firstPost.id);
+            expect(topicPosts.at(0).content).toEqual(EXAMPLE_FIRST_POST.content);
+            expect(topicPosts.at(1).id).toEqual(secondPost.id);
+            expect(topicPosts.at(1).content).toEqual(EXAMPLE_SECOND_POST.content);
         });
 
         it("should return page number is greater than total pages error", async () => {

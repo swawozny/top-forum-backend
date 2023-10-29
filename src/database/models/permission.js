@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 const {
     Model
-} = require('sequelize');
+} = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
     class Permission extends Model {
         /**
@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         name: DataTypes.STRING
     }, {
         sequelize,
-        modelName: 'Permission',
+        modelName: "Permission",
     });
     return Permission;
 };

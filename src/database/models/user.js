@@ -1,27 +1,31 @@
-'use strict';
+"use strict";
 const {
     Model
-} = require('sequelize');
+} = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
     class User extends Model {
         static associate(models) {
             User.belongsTo(models.Role, {
                 foreignKey: {
-                    name: 'roleId',
+                    name: "roleId",
                     defaultValue: 1
-                }
+                },
+                as: "userRole"
             });
 
             User.hasMany(models.Forum, {
-                foreignKey: 'creatorId',
+                foreignKey: "creatorId",
+                as: "userForums"
             });
 
             User.hasMany(models.Topic, {
-                foreignKey: 'authorId',
+                foreignKey: "authorId",
+                as: "userTopics"
             });
 
             User.hasMany(models.Post, {
-                foreignKey: 'authorId',
+                foreignKey: "authorId",
+                as: "userPosts"
             });
         }
     }
@@ -36,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
         restoringCode: DataTypes.STRING
     }, {
         sequelize,
-        modelName: 'User',
+        modelName: "User",
         timestamps: true
     });
     return User;

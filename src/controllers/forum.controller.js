@@ -5,14 +5,14 @@ const ApiError = require("../errors/apiError");
 
 exports.getForums = async (req, res, next) => {
     try {
-        const attributes = ['id', 'title', 'description'];
+        const attributes = ["id", "title", "description"];
 
         const forums = await Forum
             .findAll({
                 where: {parentForumId: null},
                 include: {
                     model: Forum,
-                    as: 'children',
+                    as: "subForums",
                     attributes
                 },
                 attributes
@@ -36,12 +36,12 @@ exports.deleteForum = async (req, res, next) => {
         const forum = await Forum.findByPk(id);
 
         if (!forum) {
-            throw new ApiError(StatusCodes.NOT_FOUND, 'Forum id is not correct!');
+            throw new ApiError(StatusCodes.NOT_FOUND, "Forum id is not correct!");
         }
 
         await forum.destroy();
 
-        return res.status(StatusCodes.OK).json({message: 'Forum deleted.'})
+        return res.status(StatusCodes.OK).json({message: "Forum deleted."})
 
     } catch (error) {
         if (!error.statusCode) {
@@ -55,23 +55,25 @@ exports.getForum = async (req, res, next) => {
     try {
         const {id} = req.params;
 
-        const forumAttributes = ['id', 'title', 'description'];
-        const topicAttributes = ['id', 'title', 'createdAt'];
-        const userAttributes = ['username'];
+        const forumAttributes = ["id", "title", "description"];
+        const topicAttributes = ["id", "title", "createdAt"];
+        const userAttributes = ["username"];
 
         const forum = await Forum.findByPk(id,
             {
                 include: [
                     {
                         model: Forum,
-                        as: 'children',
+                        as: "subForums",
                         attributes: forumAttributes
                     },
                     {
                         model: Topic,
+                        as: "forumTopics",
                         attributes: topicAttributes,
                         include: {
                             model: User,
+                            as: "topicCreator",
                             attributes: userAttributes
                         }
                     }],
@@ -79,7 +81,7 @@ exports.getForum = async (req, res, next) => {
             });
 
         if (!forum) {
-            throw new ApiError(StatusCodes.NOT_FOUND, 'Forum id is not correct!');
+            throw new ApiError(StatusCodes.NOT_FOUND, "Forum id is not correct!");
         }
 
         return res
@@ -101,13 +103,13 @@ exports.createForum = async (req, res, next) => {
         const creator = await User.findByPk(creatorId);
 
         if (!creator) {
-            throw new ApiError(StatusCodes.NOT_FOUND, 'Creator id is not correct!');
+            throw new ApiError(StatusCodes.NOT_FOUND, "Creator id is not correct!");
         }
 
         const parentForum = await Forum.findByPk(parentForumId);
 
         if (parentForumId !== null && !parentForum) {
-            throw new ApiError(StatusCodes.NOT_FOUND, 'Parent forum id is not correct!');
+            throw new ApiError(StatusCodes.NOT_FOUND, "Parent forum id is not correct!");
         }
 
         const forum = await Forum.create({
@@ -118,14 +120,14 @@ exports.createForum = async (req, res, next) => {
         });
 
         if (!forum) {
-            throw new ApiError(StatusCodes.BAD_REQUEST, 'Forum cannot be created!');
+            throw new ApiError(StatusCodes.BAD_REQUEST, "Forum cannot be created!");
         }
 
         await forum.save();
 
         return res.status(StatusCodes.CREATED).json({
             forumId: forum.id.toString(),
-            message: 'Forum created.'
+            message: "Forum created."
         });
 
     } catch (error) {
@@ -144,13 +146,13 @@ exports.updateForum = async (req, res, next) => {
       const forum = await Forum.findByPk(id);
 
       if (!forum) {
-          throw new ApiError(StatusCodes.NOT_FOUND, 'Forum id is not correct!');
+          throw new ApiError(StatusCodes.NOT_FOUND, "Forum id is not correct!");
       }
 
       const parentForum = await Forum.findByPk(parentForumId);
 
       if (parentForumId !== null && !parentForum) {
-          throw new ApiError(StatusCodes.NOT_FOUND, 'New parent forum id is not correct!');
+          throw new ApiError(StatusCodes.NOT_FOUND, "New parent forum id is not correct!");
       }
 
       await forum.update({
@@ -163,7 +165,7 @@ exports.updateForum = async (req, res, next) => {
 
       return res.status(StatusCodes.OK).json({
           forumId: id,
-          message: 'Forum updated.'
+          message: "Forum updated."
       });
 
   } catch (error) {
