@@ -1,18 +1,20 @@
-'use strict';
+"use strict";
 const {
     Model
-} = require('sequelize');
+} = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
     class Post extends Model {
         static associate(models) {
             Post.belongsTo(models.User, {
-                foreignKey: 'authorId',
-                onDelete: 'CASCADE'
+                foreignKey: "authorId",
+                as: "postCreator",
+                onDelete: "CASCADE"
             });
 
             Post.belongsTo(models.Topic, {
-                foreignKey: 'topicId',
-                onDelete: 'CASCADE'
+                foreignKey: "topicId",
+                as: "postTopic",
+                onDelete: "CASCADE"
             });
         }
     }
@@ -23,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         authorId: DataTypes.INTEGER
     }, {
         sequelize,
-        modelName: 'Post',
+        modelName: "Post",
         timestamps: true
     });
     return Post;

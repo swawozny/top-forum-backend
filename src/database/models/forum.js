@@ -1,19 +1,21 @@
-'use strict';
+"use strict";
 const {
     Model
-} = require('sequelize');
+} = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
     class Forum extends Model {
         static associate(models) {
             Forum.belongsTo(models.User, {
-                foreignKey: 'creatorId',
-                onDelete: 'CASCADE'
+                foreignKey: "creatorId",
+                as: "forumCreator",
+                onDelete: "CASCADE"
             });
 
-            Forum.hasMany(models.Forum, {as: 'children', foreignKey: 'parentForumId'});
-            Forum.belongsTo(models.Forum, {as: 'parent', foreignKey: 'parentForumId', onDelete: "CASCADE"});
+            Forum.hasMany(models.Forum, {as: "subForums", foreignKey: "parentForumId"});
+            Forum.belongsTo(models.Forum, {as: "parentForum", foreignKey: "parentForumId", onDelete: "CASCADE"});
             Forum.hasMany(models.Topic, {
-                foreignKey: 'forumId',
+                foreignKey: "forumId",
+                as: "forumTopics"
             });
         }
     }
@@ -25,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
         parentForumId: DataTypes.INTEGER
     }, {
         sequelize,
-        modelName: 'Forum',
+        modelName: "Forum",
         timestamps: true
     });
     return Forum;
