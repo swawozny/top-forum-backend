@@ -2,6 +2,8 @@ const {StatusCodes} = require("http-status-codes");
 
 const {Forum, Topic, User} = require("../database/models");
 const ApiError = require("../errors/apiError");
+const checkAuthorization = require("../middlewares/checkAuthorization");
+const {UPDATE_FORUM, DELETE_FORUM} = require("../constants/permissions");
 
 exports.getForums = async (req, res, next) => {
     try {
@@ -32,12 +34,13 @@ exports.getForums = async (req, res, next) => {
 exports.deleteForum = async (req, res, next) => {
     try {
         const {id} = req.params;
-
         const forum = await Forum.findByPk(id);
 
         if (!forum) {
             throw new ApiError(StatusCodes.NOT_FOUND, "Forum id is not correct!");
         }
+
+        await checkAuthorization(forum.creatorId, req.userId, DELETE_FORUM);
 
         await forum.destroy();
 
@@ -148,6 +151,8 @@ exports.updateForum = async (req, res, next) => {
       if (!forum) {
           throw new ApiError(StatusCodes.NOT_FOUND, "Forum id is not correct!");
       }
+
+      await checkAuthorization(forum.creatorId, req.userId, UPDATE_FORUM);
 
       const parentForum = await Forum.findByPk(parentForumId);
 

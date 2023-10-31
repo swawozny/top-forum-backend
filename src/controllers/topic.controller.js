@@ -2,6 +2,8 @@ const {StatusCodes} = require("http-status-codes");
 
 const {sequelize, Topic, Post, User, Role, Forum} = require("../database/models");
 const ApiError = require("../errors/apiError");
+const checkAuthorization = require("../middlewares/checkAuthorization");
+const {UPDATE_FORUM, DELETE_TOPIC, UPDATE_TOPIC} = require("../constants/permissions");
 
 const POSTS_PER_PAGE = 25;
 
@@ -112,6 +114,8 @@ exports.deleteTopic = async (req, res, next) => {
             throw new ApiError(StatusCodes.NOT_FOUND, "Topic id is not correct!");
         }
 
+        await checkAuthorization(topic.authorId, req.userId, DELETE_TOPIC);
+
         await topic.destroy();
 
         return res.status(StatusCodes.OK).json({message: "Topic deleted."});
@@ -134,6 +138,8 @@ exports.updateTopic = async (req, res, next) => {
       if (!topic) {
           throw new ApiError(StatusCodes.NOT_FOUND, "Topic id is not correct!");
       }
+
+      await checkAuthorization(topic.authorId, req.userId, UPDATE_TOPIC);
 
       await topic.update({
           title

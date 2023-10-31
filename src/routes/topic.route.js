@@ -12,8 +12,8 @@ router.get("/topic/:id", validateTopicData, checkValidationErrors, topicControll
 
 router.post("/topic", isAuth, ...validateCreateTopicData, checkValidationErrors, topicController.createTopic);
 
-router.put("/topic/:id", validateId, validateTitle, checkValidationErrors, topicController.updateTopic);
+router.put("/topic/:id", isAuth, validateId, validateTitle, checkValidationErrors, topicController.updateTopic);
 
-router.delete("/topic/:id", validateId, checkValidationErrors, topicController.deleteTopic);
+router.delete("/topic/:id", isAuth, validateId, checkValidationErrors, topicController.deleteTopic);
 
 module.exports = router;

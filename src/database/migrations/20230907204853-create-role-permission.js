@@ -24,6 +24,14 @@ module.exports = {
                     key: 'id',
                     as: 'permissionId',
                 }
+            },
+            createdAt: {
+                allowNull: false,
+                type: Sequelize.DATE
+            },
+            updatedAt: {
+                allowNull: false,
+                type: Sequelize.DATE
             }
         });
     },

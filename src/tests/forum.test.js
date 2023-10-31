@@ -6,6 +6,9 @@ const {faker} = require("@faker-js/faker");
 
 const server = require("../server");
 const {Forum, User, Topic} = require("../database/models");
+const {createToken} = require("../services/jwt");
+
+let AUTH_TOKEN;
 
 const EXAMPLE_USER = {
     id: faker.number.int({min: 1, max: 10}),
@@ -46,6 +49,10 @@ describe("Forum endpoints tests", () => {
             .create({...EXAMPLE_USER, password: hashedPassword});
 
         await user.save();
+
+        const {email, id} = EXAMPLE_USER;
+
+        AUTH_TOKEN = createToken({email, userId: id.toString()});
     });
     describe("GET /forums", () => {
 
@@ -162,7 +169,8 @@ describe("Forum endpoints tests", () => {
             const forumId = forum.id.toString();
 
             const result = await request(server)
-                .delete(`/forum/${forumId}`);
+                .delete(`/forum/${forumId}`)
+                .set("Authorization", `Bearer ${AUTH_TOKEN}`);
 
             const deletedForum = await Forum.findByPk(forumId);
 
@@ -175,7 +183,8 @@ describe("Forum endpoints tests", () => {
         it("should throw error that forum id is not correct", async () => {
             const randomForumId = faker.number.int({min: 1, max: 10});
             const result = await request(server)
-                .delete(`/forum/${randomForumId}`);
+                .delete(`/forum/${randomForumId}`)
+                .set("Authorization", `Bearer ${AUTH_TOKEN}`);
 
             expect(result.statusCode).toEqual(StatusCodes.NOT_FOUND);
             expect(result.body.message).toEqual("Forum id is not correct!");
@@ -266,7 +275,8 @@ describe("Forum endpoints tests", () => {
                     ...EXAMPLE_SECOND_FORUM,
                     parentForumId,
                     creatorId
-                });
+                })
+                .set("Authorization", `Bearer ${AUTH_TOKEN}`);
 
             const updatedForum = await Forum.findByPk(id.toString());
 
@@ -291,7 +301,8 @@ describe("Forum endpoints tests", () => {
                     title: faker.word.sample({length: 3}),
                     parentForumId,
                     creatorId
-                });
+                })
+                .set("Authorization", `Bearer ${AUTH_TOKEN}`);
 
             expect(result.statusCode).toEqual(StatusCodes.BAD_REQUEST);
             expect(result.body.message).toEqual("Request data validation error!");
@@ -305,7 +316,8 @@ describe("Forum endpoints tests", () => {
                 .send({
                     ...EXAMPLE_SECOND_FORUM,
                     parentForumId: null
-                });
+                })
+                .set("Authorization", `Bearer ${AUTH_TOKEN}`);
 
             expect(result.statusCode).toEqual(StatusCodes.NOT_FOUND);
             expect(result.body.message).toEqual("Forum id is not correct!");
