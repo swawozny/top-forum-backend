@@ -8,6 +8,8 @@ const server = require("../server");
 const {User, Topic, Forum, Post} = require("../database/models");
 const {createToken} = require("../services/jwt");
 
+let AUTH_TOKEN;
+
 const EXAMPLE_USER = {
     id: faker.number.int({min: 1, max: 10}),
     username: faker.internet.userName(),
@@ -56,6 +58,10 @@ describe("Topic endpoints tests", () => {
         const hashedPassword = await bcrypt.hash(EXAMPLE_USER.password, SALT_LENGTH);
         const user = await User.create({...EXAMPLE_USER, password: hashedPassword});
         await user.save();
+
+        const {email, id} = EXAMPLE_USER;
+
+        AUTH_TOKEN = createToken({email, userId: id.toString()});
 
         const forum = await Forum.create({...EXAMPLE_FORUM});
         await forum.save();
@@ -149,7 +155,9 @@ describe("Topic endpoints tests", () => {
         it("should return topic id is not correct error", async () => {
             const randomTopicId = faker.number.int({min: 1, max: 10});
 
-            const result = await request(server).delete(`/topic/${randomTopicId}`);
+            const result = await request(server)
+                .delete(`/topic/${randomTopicId}`)
+                .set("Authorization", `Bearer ${AUTH_TOKEN}`);
 
             const {body, statusCode} = result;
 
@@ -162,7 +170,9 @@ describe("Topic endpoints tests", () => {
             await topic.save();
             const topicId = topic.id;
 
-            const result = await request(server).delete(`/topic/${topicId}`);
+            const result = await request(server)
+                .delete(`/topic/${topicId}`)
+                .set("Authorization", `Bearer ${AUTH_TOKEN}`);
 
             const topicAfterDelete = await Topic.findByPk(topicId);
 
@@ -179,7 +189,9 @@ describe("Topic endpoints tests", () => {
             const topic = await Topic.create({...EXAMPLE_TOPIC});
             await topic.save();
 
-            const result = await request(server).put(`/topic/${topic.id}`);
+            const result = await request(server)
+                .put(`/topic/${topic.id}`)
+                .set("Authorization", `Bearer ${AUTH_TOKEN}`);
 
             const {body, statusCode} = result;
 
@@ -193,9 +205,10 @@ describe("Topic endpoints tests", () => {
 
             const newTitle = faker.lorem.word({length: {min: 10, max: 20}});
 
-            const result = await request(server).put(`/topic/${topic.id}`).send({
-                title: newTitle
-            });
+            const result = await request(server)
+                .put(`/topic/${topic.id}`)
+                .send({title: newTitle})
+                .set("Authorization", `Bearer ${AUTH_TOKEN}`);
 
             const updatedTopic = await Topic.findByPk(topic.id);
 
@@ -215,19 +228,14 @@ describe("Topic endpoints tests", () => {
         it("should not allow the creation of a topic in the main forum", async () => {
             const mainForum = await Forum.findByPk(EXAMPLE_FORUM.id);
 
-            const authToken = createToken({
-                email: EXAMPLE_USER.email,
-                userId: EXAMPLE_USER.id.toString()
-            });
-
             const result = await request(server)
                 .post("/topic")
-                .set("Authorization", `Bearer ${authToken}`)
                 .send({
                     title: EXAMPLE_TOPIC.title,
                     forumId: EXAMPLE_FORUM.id,
                     firstPostContent: faker.string.sample({min: 70, max: 300})
-                });
+                })
+                .set("Authorization", `Bearer ${AUTH_TOKEN}`);
 
             const {body, statusCode} = result;
 
@@ -237,19 +245,14 @@ describe("Topic endpoints tests", () => {
         });
 
         it("should throw validation error", async () => {
-            const authToken = createToken({
-                email: EXAMPLE_USER.email,
-                userId: EXAMPLE_USER.id.toString()
-            });
-
             const result = await request(server)
                 .post("/topic")
-                .set("Authorization", `Bearer ${authToken}`)
                 .send({
                     title: EXAMPLE_TOPIC.title,
                     forumId: EXAMPLE_SUBFORUM.id,
                     firstPostContent: faker.string.sample({min: 20, max: 30})
-                });
+                })
+                .set("Authorization", `Bearer ${AUTH_TOKEN}`);
 
             const {body, statusCode} = result;
 
@@ -258,19 +261,14 @@ describe("Topic endpoints tests", () => {
         });
 
         it("should create new topic", async () => {
-            const authToken = createToken({
-                email: EXAMPLE_USER.email,
-                userId: EXAMPLE_USER.id.toString()
-            });
-
             const result = await request(server)
                 .post("/topic")
-                .set("Authorization", `Bearer ${authToken}`)
                 .send({
                     title: EXAMPLE_TOPIC.title,
                     forumId: EXAMPLE_SUBFORUM.id,
                     firstPostContent: faker.string.sample({min: 70, max: 300})
-                });
+                })
+                .set("Authorization", `Bearer ${AUTH_TOKEN}`);
 
             const {body, statusCode} = result;
 
